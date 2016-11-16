@@ -1,0 +1,41 @@
+/*CSS重置*/
+body,ul,ol,li,p,h1,h2,h3,h4,h5,h6,form,fildset,table,td,img,div,dl,dt,dd,input{margin:0;padding:0;border:0;}
+body{ font-size:12px;}
+img{border:none;}
+ul,ol{ list-style:none;}
+input,select,textarea{outline:none;}
+textarea{resize:none;}
+a{ text-decoration:none;}
+
+/*清浮动*/
+.clearfix:after{content:"";display:block;clear:both;}
+.clearfix{zoom:1;}
+.fl{  float: left;  }
+.fr{float: right}
+
+/*游戏界面*/
+#view_game{
+  position: relative;
+  font-size: 0;
+  #score-head{
+    position: absolute;
+    left:0;
+    top:0;
+  }
+  #count_down{
+    position: absolute;
+    left: 2rem;
+    top: 5rem;
+    width: 104px;
+    height: 155px;
+  }
+  #count_down.bg-1{
+    background: url("../img/countdown_bg_1.png") left center no-repeat;
+  }
+  #count_down.bg-2{
+    background: url("../img/countdown_bg_2.png") left center no-repeat;
+  }
+  #count_down.bg-3{
+    background: url("../img/countdown_bg_3.png") left center no-repeat;
+  }
+}
