@@ -25,8 +25,8 @@ var paoku ={
         speedFast: 0,
         speedSlow: 0,
         /* collisionTimer: '',
-         endLine: {},
-         rafId: '',*/
+         endLine: {},*/
+         rafId: '',
         lastTime: 0,
     },
     init: function() {
@@ -38,11 +38,12 @@ var paoku ={
             './img/countdown_bg_3.png',
             './img/star_small.png',
             './img/new_bg.jpg',
+            './img/runway_bg.jpg',
             './img/person_nm_1.png',
             './img/person_nm_2.png'
         ];
-        for(var i = 0;i<imgs.length;i++){
-            var num = imgs.length;
+        var num = imgs.length;
+        for(var i = 0;i<num;i++){
             var img = new Image();
             img.src = imgs[i];
             img.onload = function () {
@@ -59,6 +60,13 @@ var paoku ={
          _this.intCons.baseSpeed = _this.intCons.speedNormal = _this.intCons.bgSpeed = Math.round(_this.intCons.runwayLength / 1500); //25秒完成游戏，一秒60帧
          _this.intCons.speedFast = Math.round(_this.intCons.speedNormal * 7 / 4);
          _this.intCons.speedSlow = Math.round(_this.intCons.speedNormal / 4);
+        //requestAnimationFrame兼容
+        var vendors = ['webkit', 'moz'];
+        for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+            window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+            window.cancelAnimationFrame =
+                window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+        }
     },
     render: function () {
         var _this = this;
@@ -80,12 +88,19 @@ var paoku ={
         }
     },
     renderBg:function (ctx) {
+        //开始的背景 含起始线
         var _this = this;
         _this.intCons.bg = new Image();
         _this.intCons.bg.src = './img/new_bg.jpg';
         _this.intCons.bg.onload= function () {
             ctx.drawImage(_this.intCons.bg, 0, 0, _this.intCons.w, _this.intCons.h);
         };
+        //背景，一直跑的跑道
+        _this.intCons.bgAddition = new Image();
+        _this.intCons.bgAddition.src = './img/runway_bg.jpg';
+        _this.intCons.bgAdditionHeight = _this.intCons.w * 721 / 640;//按给的图的大小计算height，宽度整屏宽度
+        _this.intCons.bgAdditionDistance = 0 - _this.intCons.bgAdditionHeight; //位置？？？
+
     },
     renderBlock:function (ctx) {
 
@@ -134,17 +149,17 @@ var paoku ={
         var _this = this;
         function animateRun () {
             var curTime = Date.now();
-           /* if (_this.lastTime > 0) {
-                _this.bgSpeed = _this.baseSpeed * (60 * (curTime - _this.lastTime) / 1000);
+            if (_this.intCons.lastTime > 0) {
+                _this.intCons.bgSpeed = _this.intCons.baseSpeed * (60 * (curTime - _this.intCons.lastTime) / 1000);
             }
-            _this.lastTime = curTime;*/
+            _this.intCons.lastTime = curTime;
 
             //注意顺序，先画背景，再画终点线，再画刻度，再画障碍物，最后画人物
-            ctx.clearRect(0, 0, _this.w, _this.h);
+            ctx.clearRect(0, 0, _this.intCons.w, _this.intCons.h);
 
-            _this.rollBg(ctx);
-            _this.frameCount++;
-            _this.drawRunner(ctx);
+            _this.runBg(ctx);
+            _this.intCons.frameCount++;
+            _this.runRunner(ctx);
             //障碍物
 
 
@@ -155,9 +170,9 @@ var paoku ={
             if (_this.runwayLength + _this.runner.size[1] <= 0) {
                 _this.endRun();
                 return false;
-            }
+            }*/
 
-            _this.rafId = window.requestAnimationFrame(animateRun);*/
+            _this.intCons.rafId = window.requestAnimationFrame(animateRun);
         }
         animateRun();
         //背景
@@ -167,16 +182,26 @@ var paoku ={
         //
 
     },
-    rollBg:function (ctx) {
+    runBg:function (ctx) {
         var _this = this;
+        //含起始线的背景移动
         _this.intCons.bgDistance += _this.intCons.bgSpeed;
+        //ctx.drawImage(_this.intCons.bg, 0, 0, _this.intCons.w, _this.intCons.h);
         if (_this.intCons.bgDistance < _this.intCons.h) {
             ctx.drawImage(_this.intCons.bg, 0, _this.intCons.bgDistance, _this.intCons.w, _this.intCons.h);
         }
+        //一直跑的跑道移动
+        _this.intCons.bgAdditionDistance += _this.intCons.bgSpeed;
+        for (var i = 0; i < 100; i++) {//i<100的循环？？随意定的
+            ctx.drawImage(_this.intCons.bgAddition, 0, _this.intCons.bgAdditionDistance - i * _this.intCons.bgAdditionHeight, _this.intCons.w, _this.intCons.bgAdditionHeight);
+            if (_this.intCons.bgAdditionDistance - i * _this.intCons.bgAdditionHeight <= 0) {
+                break;
+            }
+        }
     },
-    drawRunner:function (ctx) {
+    runRunner:function (ctx) {
         var _this = this;
-        if (this.frameCount % 10 == 0) {
+        if (_this.intCons.frameCount % 10 == 0) {
             _this.intCons.runner.animateState == 1 ? _this.intCons.runner.animateState = 2 : _this.intCons.runner.animateState = 1;
         }
         ctx.drawImage(_this.intCons.runner.normal[_this.intCons.runner.animateState], _this.intCons.runner.positon[0], _this.intCons.runner.positon[1], _this.intCons.runner.size[0], _this.intCons.runner.size[1]);
