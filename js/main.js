@@ -203,7 +203,19 @@ var paoku ={
     },
     bind:function () {
         //swiperUp
-        canvas.addEventListener('', circle);
+        canvas.addEventListener('touchstart',function (e) {
+            e.preventDefault();
+            var initX = e.targetTouches[0].clientX;
+            var initY = e.targetTouches[0].clientY;
+            canvas.addEventListener('touchmove',function () {
+                e.preventDefault();
+
+            });
+            canvas.addEventListener('touchend',function (e) {
+
+            })
+        });
+
     },
 //碰撞检测
     collisionTest:function () {
