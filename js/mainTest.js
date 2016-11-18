@@ -28,7 +28,8 @@ var paoku ={
      endLine: {},*/
     rafId: '',
     lastTime: 0,
-    
+};
+$.extend(true,paoku,{
     init: function() {
         var _this = this;
         //加载完图片后render
@@ -202,8 +203,9 @@ var paoku ={
 
     },
     bind:function () {
+        //count_time
+
         //swiperUp
-        canvas.addEventListener('', circle);
     },
 //碰撞检测
     collisionTest:function () {
@@ -217,18 +219,17 @@ var paoku ={
                     blockHoriCenterCord = [blockItem.left + blockItem.width / 2, blockItem.top + blockItem.height / 2];
 
                 if (Math.abs(runnerHoriCenterCord[0] - blockHoriCenterCord[0]) < (_this.runner.size[0] + blockItem.width) / 2 && Math.abs(runnerHoriCenterCord[1] - blockHoriCenterCord[1]) < (_this.runner.size[1] + blockItem.height) / 2) {
-                    this.handleCollision();
-                     /* _this.blockList[i] = null;*/
+                    /*this.handleCollision(blockItem.type);
+                     _this.blockList[i] = null;*/
                     //碰上就死掉的操作
 
                 }
             }
         }
     },
-    handleCollision:function () {
-        var _this = this;
-        window.cancelAnimationFrame(_this.rafId)
-    },
-};
+    countTime:function () {
+
+    }
+});
 
 paoku.init();
