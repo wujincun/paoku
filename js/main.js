@@ -208,17 +208,25 @@ var paoku ={
             e.preventDefault();
             var initX = e.targetTouches[0].clientX;
             var initY = e.targetTouches[0].clientY;
+            var initPX = e.targetTouches[0].pageX;
+            var initPY = e.targetTouches[0].pageY;
             var temp = _this.runner.positon[1];
-            canvas.addEventListener('touchmove',function () {
+            var timer = null;
+            canvas.addEventListener('touchmove',function (e) {
                 e.preventDefault();
+                var distanceX = e.targetTouches[0].pageX - initX;
+                var distanceY = e.targetTouches[0].pageY - initY;
+                if(distanceX)
                 _this.runner.positon[1] = _this.runner.positon[1] - 10;// _this.runner.positon[1]+_this.block.size[1]
-                setTimeout(
+                timer = setTimeout(
                     function(){
                         _this.runner.positon[1] = temp;
-                    },300);
+                    },300
+                );
             });
             canvas.addEventListener('touchend',function (e) {
 
+                clearTimeout(timer)
             })
         });
 
