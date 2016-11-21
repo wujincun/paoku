@@ -139,7 +139,7 @@ var paoku ={
                 clearInterval(readyCountTimer);
                 $('#count_down').hide();
                 _this.run(ctx); //跑
-                _this.bind();
+                _this.bind(ctx);
             } else {
                 $('#count_down').attr('class', 'bg-' + readyCountNum);
             }
@@ -201,14 +201,22 @@ var paoku ={
     runBlock:function (ctx) {
 
     },
-    bind:function () {
+    bind:function (ctx) {
+        var _this = this;
         //swiperUp
         canvas.addEventListener('touchstart',function (e) {
             e.preventDefault();
             var initX = e.targetTouches[0].clientX;
             var initY = e.targetTouches[0].clientY;
+            var temp = _this.runner.positon[1];
             canvas.addEventListener('touchmove',function () {
                 e.preventDefault();
+                _this.runner.positon[1] =  _this.runner.positon[1] - 10;// _this.runner.positon[1]+_this.block.size[1]
+                setTimeout(
+                    function(){
+                        _this.runner.positon[1] = temp;
+                    },300)
+                ctx.drawImage(_this.runner.normal[_this.runner.animateState], _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0], _this.runner.size[1]);
 
             });
             canvas.addEventListener('touchend',function (e) {
