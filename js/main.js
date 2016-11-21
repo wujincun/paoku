@@ -211,13 +211,11 @@ var paoku ={
             var temp = _this.runner.positon[1];
             canvas.addEventListener('touchmove',function () {
                 e.preventDefault();
-                _this.runner.positon[1] =  _this.runner.positon[1] - 10;// _this.runner.positon[1]+_this.block.size[1]
+                _this.runner.positon[1] = _this.runner.positon[1] - 10;// _this.runner.positon[1]+_this.block.size[1]
                 setTimeout(
                     function(){
                         _this.runner.positon[1] = temp;
-                    },300)
-                ctx.drawImage(_this.runner.normal[_this.runner.animateState], _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0], _this.runner.size[1]);
-
+                    },300);
             });
             canvas.addEventListener('touchend',function (e) {
 
