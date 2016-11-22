@@ -28,6 +28,7 @@ var paoku ={
      endLine: {},*/
     rafId: '',
     lastTime: 0,
+    flag:false,//标志是否挑起 true为挑起
     
     init: function() {
         var _this = this;
@@ -222,37 +223,59 @@ var paoku ={
         var _this = this;
         var timer = null;
         //swiperUp
-        var initY,initX,moveY,moveX,distanceY;
+        var initY,initX,moveY,moveX,distanceY,temp;
+
         canvas.addEventListener('touchstart',function (e) {
             e.preventDefault();
-            clearTimeout(timer);
             moveY = initY = e.targetTouches[0].pageY;
             moveX = initX = e.targetTouches[0].pageX;
-            var temp = _this.runner.positon[1];
-            canvas.addEventListener('touchmove',function (e) {
-                e.preventDefault();
+            temp = _this.runner.positon[1];
+
+        });
+        canvas.addEventListener('touchmove',function (e) {
+            if(_this.flag){
+                // 跳起状态
+
+            }else{
+                // 未跳起状态
+                flag = true;
+                if(checkMoveUp(e)){
+
+                    upAndDown()
+                    //window.cancelAnimationFrame(_this.rafId);
+                    //_this.runner.positon[1] = _this.runner.positon[1] - 10;// _this.runner.positon[1]+_this.block.size[1]
+                    //timer = setTimeout(function(){
+                    //    _this.runner.positon[1] = temp;
+                    //    _this.run(ctx);
+                    //},200);
+                }
+
+            }
+            e.preventDefault()
+            clearTimeout(timer);
+            function upAndDown(){
+                up()
+            }
+            function checkMoveUp(e){
                 moveX = e.targetTouches[0].pageX;
                 moveY = e.targetTouches[0].pageY;
                 distanceX = moveX - initX;
                 distanceY = moveY - initY;
                 if(Math.abs(distanceX) < Math.abs(distanceY) && distanceY < -30){//判断向上滑
-                    console.log('up');
-                    window.cancelAnimationFrame(_this.rafId);
-                    /*_this.runner.positon[1] = _this.runner.positon[1] - 10;// _this.runner.positon[1]+_this.block.size[1]
-                    timer = setTimeout(function(){
-                        _this.runner.positon[1] = temp;
-                        _this.run(ctx);
-                    },200);*/
+                    return true
                 }
-            });
-            canvas.addEventListener('touchend',function (e) {
-                distanceY = moveY - initY;
-                distanceX = moveX - initX;
-                if(Math.abs(distanceX) < Math.abs(distanceY) && distanceY < -30){
-
-                }//判断向上滑
-            })
+                return false;
+            }
         });
+        canvas.addEventListener('touchend',function (e) {
+            distanceY = moveY - initY;
+            distanceX = moveX - initX;
+            if(Math.abs(distanceX) < Math.abs(distanceY) && distanceY < -30){
+
+            }//判断向上滑
+
+        })
+
 
     },
 //碰撞检测
