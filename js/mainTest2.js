@@ -184,12 +184,51 @@ var paoku ={
             _this.rafId = window.requestAnimationFrame(animateRun);
         }
         animateRun();
-        //背景
+    },
+    animateBg:function (ctx) {
+        var _this = this;
+        function animateRun () {
+            var curTime = Date.now();
+            if (_this.lastTime > 0) {
+                _this.bgSpeed = _this.baseSpeed * (60 * (curTime - _this.lastTime) / 1000);
+            }
+            _this.lastTime = curTime;
 
-        //人
+            //注意顺序，先画背景，再画终点线，再画刻度，再画障碍物，最后画人物
+            //ctx.clearRect(0, 0, _this.w, _this.h);
 
-        //
+            _this.runBg(ctx);
+            _this.frameCount++;
 
+            if (_this.frameCount % 5 == 0) {
+                _this.collisionTest();
+            }
+            _this.animateBgId = window.requestAnimationFrame(animateRun);
+        }
+        animateRun();
+    },
+    animateRunner:function (ctx) {
+        var _this = this;
+        function animateRun () {
+            var curTime = Date.now();
+            if (_this.lastTime > 0) {
+                _this.bgSpeed = _this.baseSpeed * (60 * (curTime - _this.lastTime) / 1000);
+            }
+            _this.lastTime = curTime;
+
+            //注意顺序，先画背景，再画终点线，再画刻度，再画障碍物，最后画人物
+            ctx.fillStyle="#ffffff";//白色为例子；
+            ctx.fillRect(_this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0], _this.runner.size[1]);
+
+            _this.runRunner(ctx);
+            _this.frameCount++;
+
+            if (_this.frameCount % 5 == 0) {
+                _this.collisionTest();
+            }
+            _this.animateRunnerId = window.requestAnimationFrame(animateRun);
+        }
+        animateRun();
     },
     runBg:function (ctx) {
         var _this = this;
@@ -228,17 +267,21 @@ var paoku ={
             clearTimeout(timer);
             moveY = initY = e.targetTouches[0].pageY;
             moveX = initX = e.targetTouches[0].pageX;
-            var temp = _this.runner.positon[1];
+            _this.temp = _this.runner.positon[1];
             canvas.addEventListener('touchmove',function (e) {
                 e.preventDefault();
+                window.cancelAnimationFrame(_this.rafId);
+                window.cancelAnimationFrame(_this.animateRunnerId);
+                window.cancelAnimationFrame(_this.animateBgId);
                 moveX = e.targetTouches[0].pageX;
                 moveY = e.targetTouches[0].pageY;
                 distanceX = moveX - initX;
                 distanceY = moveY - initY;
                 if(Math.abs(distanceX) < Math.abs(distanceY) && distanceY < -30){//判断向上滑
-                    console.log('up');
-                    window.cancelAnimationFrame(_this.rafId);
-                    /*_this.runner.positon[1] = _this.runner.positon[1] - 10;// _this.runner.positon[1]+_this.block.size[1]
+                    console.log('up')
+                    _this.runner.positon[1] = _this.runner.positon[1] - 10;// _this.runner.positon[1]+_this.block.size[1]
+                    _this.rafId = _this.animateRunner(ctx);
+                    /*
                     timer = setTimeout(function(){
                         _this.runner.positon[1] = temp;
                         _this.run(ctx);
@@ -246,11 +289,8 @@ var paoku ={
                 }
             });
             canvas.addEventListener('touchend',function (e) {
-                distanceY = moveY - initY;
-                distanceX = moveX - initX;
-                if(Math.abs(distanceX) < Math.abs(distanceY) && distanceY < -30){
-
-                }//判断向上滑
+                _this.runner.positon[1] = _this.temp;
+                _this.run(ctx)
             })
         });
 
