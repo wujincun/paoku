@@ -13,8 +13,8 @@ var paoku ={
     /*swipeLock: true,*/
     totalDistance: 0,
     runwayLength: 0,
-    bgSpeed: 0,
-    baseSpeed: 0, //基础速度，bgSpeed在此基础上根据帧率发生变化
+    bgSpeed: 6,  //和baseSpeed，给了一个初始值，可以在初始化时根据其他因素设置
+    baseSpeed: 6, //基础速度，bgSpeed在此基础上根据帧率发生变化
     blockList: [],
     /* runActTimer: '',
      startLineHeight: 0,
@@ -58,12 +58,9 @@ var paoku ={
 
         }
         //设置初始值
-        _this.totalDistance = _this.runwayLength = _this.w * 15; //跑道长度是宽度15倍
-        _this.baseSpeed = _this.speedNormal = _this.bgSpeed = Math.round(_this.runwayLength / 1500); //25秒完成游戏，一秒60帧
-        _this.speedFast = Math.round(_this.speedNormal * 7 / 4);
-        _this.speedSlow = Math.round(_this.speedNormal / 4);
+       /* _this.totalDistance = _this.runwayLength = _this.w * 15; //跑道长度是宽度15倍
+        _this.baseSpeed = _this.speedNormal = _this.bgSpeed = Math.round(_this.runwayLength / 1500); //25秒完成游戏，一秒60帧*/
         //requestAnimationFrame兼容
-        var lastTime = 0;
         var vendors = ['ms', 'moz', 'webkit', 'o'];
         for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
             window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
@@ -209,14 +206,14 @@ var paoku ={
         if (_this.bgDistance < _this.h) {
             ctx.drawImage(_this.bg, 0, _this.bgDistance, _this.w, _this.h);
         }
-        //一直跑的跑道移动
+    /* //一直跑的跑道移动
         _this.bgAdditionDistance += _this.bgSpeed;
         for (var i = 0; i < 100; i++) {//i<100的循环？？随意定的
             ctx.drawImage(_this.bgAddition, 0, _this.bgAdditionDistance - i * _this.bgAdditionHeight, _this.w, _this.bgAdditionHeight);
             if (_this.bgAdditionDistance - i * _this.bgAdditionHeight <= 0) {
                 break;
             }
-        }
+        }*/
     },
     runRunner:function (ctx) {
         var _this = this;
