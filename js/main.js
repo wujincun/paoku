@@ -28,7 +28,8 @@ var paoku ={
      endLine: {},*/
     rafId: '',
     lastTime: 0,
-    flag:false,//标志是否挑起 true为挑起
+    flag:false,//标志是否跳起 true为跳起
+    isUp:false,//是否向上跳
     
     init: function() {
         var _this = this;
@@ -97,8 +98,9 @@ var paoku ={
         ctx.clearRect(0, 0, w, h);
         //画场景
         _this.renderBg(ctx);
-        _this.renderBlock(ctx);
         _this.renderRunner(ctx);
+        _this.renderBlock(ctx);
+
 
         if (!this.isInit) {
             this.renderListener(ctx);//3s开始倒计时
@@ -121,7 +123,15 @@ var paoku ={
 
     },
     renderBlock:function (ctx) {
-
+        var _this = this;
+        var w = this.w;
+        var h = this.h;
+        _this.block = {};
+        _this.block.size = [w * 0.2, w * 0.2 * 190 / 130];//大小重新计算
+        _this.block.centerPositon = (w - _this.block.size[0]) / 2;
+        _this.block.positon = [_this.block.centerPositon, h - _this.block.size[1]];//重新计算
+        _this.runner.ceiling = [_this.runner.centerPositon,h - _this.runner.size[1]-100];
+        //_this.runner.ceiling = [_this.runner.centerPositon,h - _this.runner.size[1]-_this.block.size[1]];
     },
     renderRunner:function(ctx){
         var _this = this;
@@ -131,21 +141,17 @@ var paoku ={
         _this.runner.size = [w * 0.2, w * 0.2 * 190 / 130];
         _this.runner.centerPositon = (w - _this.runner.size[0]) / 2;
         _this.runner.positon = [_this.runner.centerPositon, h - _this.runner.size[1]];
+        _this.runner.floor = [_this.runner.centerPositon, h - _this.runner.size[1]];
         _this.runner.animateState = 1;
 
-        var runnerImg = {
-            normal: './img/person_nm_'
-        };
+        var runnerImg =  './img/person_nm_';
 
-        for (var key in runnerImg) {
-            _this.runner[key] = new Object();
-            for (var i = 1; i < 3; i++) {
-                _this.runner[key][i] = new Image();
-                _this.runner[key][i].src = runnerImg[key] + i + '.png';
-            }
+        for (var i = 1; i < 3; i++) {
+            _this.runner[i] = new Image();
+            _this.runner[i].src = runnerImg + i + '.png';
         }
-        _this.runner.normal[1].onload = function () {
-            ctx.drawImage(_this.runner.normal[1], _this.runner.positon[0], _this.runner.positon[1],_this.runner.size[0], _this.runner.size[1]);
+        _this.runner[1].onload = function () {
+            ctx.drawImage(_this.runner[1], _this.runner.positon[0], _this.runner.positon[1],_this.runner.size[0], _this.runner.size[1]);
         }
     },
     renderListener:function (ctx) {
@@ -165,6 +171,7 @@ var paoku ={
     },
     run:function (ctx) {
         var _this = this;
+        window.cancelAnimationFrame(_this.rafId);//????
         function animateRun () {
             var curTime = Date.now();
             if (_this.lastTime > 0) {
@@ -174,11 +181,13 @@ var paoku ={
 
             //注意顺序，先画背景，再画终点线，再画刻度，再画障碍物，最后画人物
             ctx.clearRect(0, 0, _this.w, _this.h);
-
             _this.runBg(ctx);
             _this.frameCount++;
-            _this.runRunner(ctx);
-
+            if(_this.flag){//跳起
+                _this.jumpRunner(ctx);//画每一帧跳起的小人
+            }else{
+                _this.runRunner(ctx);//画每一帧奔跑的小人
+            }
             if (_this.frameCount % 5 == 0) {
                 _this.collisionTest();
             }
@@ -214,11 +223,36 @@ var paoku ={
         if (_this.frameCount % 10 == 0) {
             _this.runner.animateState == 1 ? _this.runner.animateState = 2 : _this.runner.animateState = 1;
         }
-        ctx.drawImage(_this.runner.normal[_this.runner.animateState], _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0], _this.runner.size[1]);
+        ctx.drawImage(_this.runner[_this.runner.animateState], _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0], _this.runner.size[1]);
+    },
+    jumpRunner:function (ctx) {
+        var _this =this;
+        //判断up or down；
+        if(!_this.isUp){
+            if(_this.runner.positon[1] <= _this.runner.ceiling[1]){
+                _this.runner.positon[1] = _this.runner.ceiling[1];
+                _this.isUp = true
+            }else{
+                _this.runner.positon[1] -= 10;
+                ctx.drawImage(_this.runner[_this.runner.animateState], _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0],_this.runner.size[1]);
+            }
+        }else{
+            if(_this.runner.positon[1] >= _this.runner.floor[1]){
+                _this.runner.positon[1] = _this.runner.floor[1];
+                _this.isUp = false;
+                _this.flag = false;
+            }else{
+                _this.runner.positon[1] += 10;
+                ctx.drawImage(_this.runner[_this.runner.animateState], _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0], _this.runner.size[1]);
+            }
+        }
     },
     runBlock:function (ctx) {
-
+        _this.block.size = [w * 0.2, w * 0.2 * 190 / 130];//大小重新计算
+        _this.block.centerPositon = (w - _this.block.size[0]) / 2;
+        _this.block.positon = [_this.block.centerPositon, h - _this.block.size[1]];//重新计算
     },
+
     bind:function (ctx) {
         var _this = this;
         var timer = null;
@@ -233,28 +267,13 @@ var paoku ={
 
         });
         canvas.addEventListener('touchmove',function (e) {
-            if(_this.flag){
-                // 跳起状态
-
-            }else{
-                // 未跳起状态
-                flag = true;
+            e.preventDefault();
+            if(!_this.flag){// 未跳起状态
                 if(checkMoveUp(e)){
-
-                    upAndDown()
-                    //window.cancelAnimationFrame(_this.rafId);
-                    //_this.runner.positon[1] = _this.runner.positon[1] - 10;// _this.runner.positon[1]+_this.block.size[1]
-                    //timer = setTimeout(function(){
-                    //    _this.runner.positon[1] = temp;
-                    //    _this.run(ctx);
-                    //},200);
+                    _this.flag = true;
+                    _this.run(ctx);//在每一帧里画跳起的小人，需要先清一下cancelAnimationFrame吗？？？？
                 }
 
-            }
-            e.preventDefault()
-            clearTimeout(timer);
-            function upAndDown(){
-                up()
             }
             function checkMoveUp(e){
                 moveX = e.targetTouches[0].pageX;
@@ -268,11 +287,7 @@ var paoku ={
             }
         });
         canvas.addEventListener('touchend',function (e) {
-            distanceY = moveY - initY;
-            distanceX = moveX - initX;
-            if(Math.abs(distanceX) < Math.abs(distanceY) && distanceY < -30){
 
-            }//判断向上滑
 
         })
 
