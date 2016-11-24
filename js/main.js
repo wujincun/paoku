@@ -42,7 +42,8 @@ var paoku ={
             './img/new_bg.jpg',
             './img/runway_bg.jpg',
             './img/person_nm_1.png',
-            './img/person_nm_2.png'
+            './img/person_nm_2.png',
+            './img/H5页面.jpg'
         ];
         var num = imgs.length;
         for(var i = 0;i<num;i++){
@@ -67,7 +68,7 @@ var paoku ={
             window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
         }
         //兼容，但是 这里计算速度
-       /* if (!window.requestAnimationFrame) {
+        if (!window.requestAnimationFrame) {
             window.requestAnimationFrame = function(callback, element) {
                 var currTime = Date.now();
                 var timeToCall = Math.max(0, 16.7 - (currTime - lastTime));
@@ -82,7 +83,7 @@ var paoku ={
             window.cancelAnimationFrame = function(id) {
                 clearTimeout(id);
             };
-        }*/
+        }
     },
     render: function () {
         var _this = this;
@@ -114,7 +115,7 @@ var paoku ={
         };
         //背景，一直跑的跑道
         _this.bgAddition = new Image();
-        _this.bgAddition.src = './img/runway_bg.jpg';
+        _this.bgAddition.src = './img/H5页面.jpg';
         _this.bgAdditionHeight = _this.w * 721 / 640;//按给的图的大小计算height，宽度整屏宽度
         _this.bgAdditionDistance = 0 - _this.bgAdditionHeight; //位置？？？
 
@@ -170,11 +171,11 @@ var paoku ={
         var _this = this;
         window.cancelAnimationFrame(_this.rafId);//????
         function animateRun () {
-            var curTime = Date.now();
+           /* var curTime = Date.now();
             if (_this.lastTime > 0) {
                 _this.bgSpeed = _this.baseSpeed * (60 * (curTime - _this.lastTime) / 1000);
             }
-            _this.lastTime = curTime;
+            _this.lastTime = curTime;*/
 
             //注意顺序，先画背景，再画终点线，再画刻度，再画障碍物，最后画人物
             ctx.clearRect(0, 0, _this.w, _this.h);
@@ -203,9 +204,15 @@ var paoku ={
         //含起始线的背景移动
         _this.bgDistance += _this.bgSpeed;
         //ctx.drawImage(_this.bg, 0, 0, _this.w, _this.h);
-        if (_this.bgDistance < _this.h) {
-            ctx.drawImage(_this.bg, 0, _this.bgDistance, _this.w, _this.h);
+         /*if (_this.bgDistance < _this.h) {
+            ctx.drawImage(_this.bg, 0, _this.bgDistance, _this.w/2, _this.h/2);
+        }*/
+        _this.sy = _this.h - _this.bgDistance;
+        if(_this.sy <= 0) {
+            _this.bgDistance = 0
         }
+        //drawImage(img,sx,sy,swidth,sheight,x,y,width,height)
+        ctx.drawImage(_this.bgAddition, 0, _this.sy, _this.w,_this.h/2,0, 0,_this.w, _this.h);
     /* //一直跑的跑道移动
         _this.bgAdditionDistance += _this.bgSpeed;
         for (var i = 0; i < 100; i++) {//i<100的循环？？随意定的
