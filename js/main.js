@@ -11,19 +11,21 @@ var paoku ={
     runner: {},
     frameCount: 0,
     /*swipeLock: true,*/
-    totalDistance: 0,
-    runwayLength: 0,
+    /*totalDistance: 0,
+    runwayLength: 0,*/
     bgSpeed: 6,  //和baseSpeed，给了一个初始值，可以在初始化时根据其他因素设置
-    baseSpeed: 6, //基础速度，bgSpeed在此基础上根据帧率发生变化
-    blockList: [],
+    //要求速度变化，设置 bgFastSpeed:8,bgSlowSpeed:4
+    //可以通过speedFlag来判断是何速度，背景图片切换的时候作为判断边界
+    blockList: [],//
+    blockGap:50,//障碍物跨栏之间的距离
     /* runActTimer: '',
      startLineHeight: 0,
      scaleHeight: 0,
      scaleList: [],*/
     isInit: false,
-    speedNormal: 0,
+    /*speedNormal: 0,
     speedFast: 0,
-    speedSlow: 0,
+    speedSlow: 0,*/
     /* collisionTimer: '',
      endLine: {},*/
     rafId: '',
@@ -56,7 +58,6 @@ var paoku ={
                 }
                 _this.render()
             }
-
         }
         //设置初始值
        /* _this.totalDistance = _this.runwayLength = _this.w * 15; //跑道长度是宽度15倍
@@ -67,7 +68,7 @@ var paoku ={
             window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
             window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
         }
-        //兼容，但是 这里计算速度
+        //兼容，但是 这里计算速度？？
         if (!window.requestAnimationFrame) {
             window.requestAnimationFrame = function(callback, element) {
                 var currTime = Date.now();
@@ -99,7 +100,6 @@ var paoku ={
         _this.renderRunner(ctx);
         _this.renderBlock(ctx);
 
-
         if (!this.isInit) {
             this.renderListener(ctx);//3s开始倒计时
             this.isInit = true;
@@ -119,7 +119,7 @@ var paoku ={
         _this.bgAdditionHeight = _this.w * 1450 / 640;//按给的图的大小计算height，宽度整屏宽度
 
     },
-    renderBlock:function (ctx) {
+    renderBlock:function (ctx) {//要想循环，那必须两张图了，含有障碍物的跑道为一张大图
         var _this = this;
         var w = this.w;
         var h = this.h;
@@ -168,14 +168,13 @@ var paoku ={
     },
     run:function (ctx) {
         var _this = this;
-        window.cancelAnimationFrame(_this.rafId);//????
+        window.cancelAnimationFrame(_this.rafId);//不清理会动画积累
         function animateRun () {
            /* var curTime = Date.now();
             if (_this.lastTime > 0) {
                 _this.bgSpeed = _this.baseSpeed * (60 * (curTime - _this.lastTime) / 1000);
             }
             _this.lastTime = curTime;*/
-
             //注意顺序，先画背景，再画终点线，再画刻度，再画障碍物，最后画人物
             ctx.clearRect(0, 0, _this.w, _this.h);
             _this.runBg(ctx);
@@ -184,9 +183,9 @@ var paoku ={
                 _this.jumpRunner(ctx);//画每一帧跳起的小人
             }else{
                 _this.runRunner(ctx);//画每一帧奔跑的小人
-            }
-            if (_this.frameCount % 5 == 0) {
-                _this.collisionTest();
+                if (_this.frameCount % 5 == 0) {
+                    _this.collisionTest();
+                }
             }
             _this.rafId = window.requestAnimationFrame(animateRun);
         }
@@ -261,7 +260,7 @@ var paoku ={
             if(!_this.flag){// 未跳起状态
                 if(checkMoveUp(e)){
                     _this.flag = true;
-                    _this.run(ctx);//在每一帧里画跳起的小人，需要先清一下cancelAnimationFrame吗？？？？
+                    _this.run(ctx);
                 }
 
             }
@@ -292,9 +291,6 @@ var paoku ={
 
                 if (Math.abs(runnerHoriCenterCord[0] - blockHoriCenterCord[0]) < (_this.runner.size[0] + blockItem.width) / 2 && Math.abs(runnerHoriCenterCord[1] - blockHoriCenterCord[1]) < (_this.runner.size[1] + blockItem.height) / 2) {
                     this.handleCollision();
-                     /* _this.blockList[i] = null;*/
-                    //碰上就死掉的操作
-
                 }
             }
         }
@@ -302,7 +298,7 @@ var paoku ={
     handleCollision:function () {
         var _this = this;
         window.cancelAnimationFrame(_this.rafId)
-    },
+    }
 };
 
 paoku.init();
