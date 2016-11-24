@@ -116,8 +116,7 @@ var paoku ={
         //背景，一直跑的跑道
         _this.bgAddition = new Image();
         _this.bgAddition.src = './img/H5页面.jpg';
-        _this.bgAdditionHeight = _this.w * 721 / 640;//按给的图的大小计算height，宽度整屏宽度
-        _this.bgAdditionDistance = 0 - _this.bgAdditionHeight; //位置？？？
+        _this.bgAdditionHeight = _this.w * 1450 / 640;//按给的图的大小计算height，宽度整屏宽度
 
     },
     renderBlock:function (ctx) {
@@ -128,7 +127,7 @@ var paoku ={
         _this.block.size = [w * 0.2, w * 0.2 * 190 / 130];//大小重新计算
         _this.block.centerPositon = (w - _this.block.size[0]) / 2;
         _this.block.positon = [_this.block.centerPositon, h - _this.block.size[1]];//重新计算
-        _this.runner.ceiling = [_this.runner.centerPositon,h - _this.runner.size[1]-100];
+        _this.runner.ceiling = [_this.runner.centerPositon,h - _this.runner.size[1]-200];
         //_this.runner.ceiling = [_this.runner.centerPositon,h - _this.runner.size[1]-_this.block.size[1]];
     },
     renderRunner:function(ctx){
@@ -203,24 +202,12 @@ var paoku ={
         var _this = this;
         //含起始线的背景移动
         _this.bgDistance += _this.bgSpeed;
-        //ctx.drawImage(_this.bg, 0, 0, _this.w, _this.h);
-         /*if (_this.bgDistance < _this.h) {
-            ctx.drawImage(_this.bg, 0, _this.bgDistance, _this.w/2, _this.h/2);
-        }*/
-        _this.sy = _this.h - _this.bgDistance;
+        _this.sy = _this.bgAdditionHeight - _this.h/2 - _this.bgDistance;
         if(_this.sy <= 0) {
             _this.bgDistance = 0
         }
         //drawImage(img,sx,sy,swidth,sheight,x,y,width,height)
-        ctx.drawImage(_this.bgAddition, 0, _this.sy, _this.w,_this.h/2,0, 0,_this.w, _this.h);
-    /* //一直跑的跑道移动
-        _this.bgAdditionDistance += _this.bgSpeed;
-        for (var i = 0; i < 100; i++) {//i<100的循环？？随意定的
-            ctx.drawImage(_this.bgAddition, 0, _this.bgAdditionDistance - i * _this.bgAdditionHeight, _this.w, _this.bgAdditionHeight);
-            if (_this.bgAdditionDistance - i * _this.bgAdditionHeight <= 0) {
-                break;
-            }
-        }*/
+        ctx.drawImage(_this.bgAddition, 0, _this.sy, _this.w,_this.h/2,0, 0,_this.w, _this.h);//_this.h/2是一屏？？？img画的高度
     },
     runRunner:function (ctx) {
         var _this = this;
@@ -237,7 +224,7 @@ var paoku ={
                 _this.runner.positon[1] = _this.runner.ceiling[1];
                 _this.isUp = true
             }else{
-                _this.runner.positon[1] -= 10;
+                _this.runner.positon[1] -= 20;//背景速度为6
                 ctx.drawImage(_this.runner[_this.runner.animateState], _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0],_this.runner.size[1]);
             }
         }else{
@@ -259,7 +246,6 @@ var paoku ={
 
     bind:function (ctx) {
         var _this = this;
-        var timer = null;
         //swiperUp
         var initY,initX,moveY,moveX,distanceY,temp;
 
@@ -291,11 +277,7 @@ var paoku ={
             }
         });
         canvas.addEventListener('touchend',function (e) {
-
-
         })
-
-
     },
 //碰撞检测
     collisionTest:function () {
