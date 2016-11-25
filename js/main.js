@@ -131,7 +131,7 @@ var paoku ={
         for(var i=0;i<10;i++){
             _this.blockList[i] = new Image();
             _this.blockList[i].src = './img/roadBlock.png';
-            ctx.drawImage(_this.blockList[i],(w -_this.blockSize[0])/2, _this.bgAdditionHeight - blockDistance,_this.blockSize[0],_this.blockSize[1]);
+            ctx.drawImage(_this.blockList[i],(w -_this.blockSize[0])/2, _this.bgAdditionHeight -_this.h/2 - blockDistance,_this.blockSize[0],_this.blockSize[1]);
             blockDistance += _this.blockToBlockDistance;
         }
         _this.runner.ceiling = [_this.runner.centerPositon,h - _this.runner.size[1]-200];
@@ -210,7 +210,7 @@ var paoku ={
         _this.bgDistance += _this.bgSpeed;
         _this.sy = _this.bgAdditionHeight - _this.h/2 - _this.bgDistance;
         if(_this.sy <= 0) {
-            _this.bgDistance = _this.endToBlockDistance //数值是跑道开始到有障碍物之间的距离
+            _this.bgDistance = _this.endToBlockDistance; //数值是跑道开始到有障碍物之间的距离
         }
         //drawImage(img,sx,sy,swidth,sheight,x,y,width,height)
         ctx.drawImage(_this.bgAddition, 0, _this.sy, _this.w,_this.h/2,0, 0,_this.w, _this.h);//_this.h/2是一屏？？？img画的高度
@@ -249,11 +249,15 @@ var paoku ={
         var w = _this.w;
         _this.blockSize = [w * 0.8,w * 0.8 * 95/520];
         _this.blockDistance -=_this.bgSpeed;
-        _this.blockItemTop = _this.blockDistance;
+        _this.blockItemTop = _this.blockDistance;//每个障碍物的位置，障碍物之间为参照物
+        _this.blockSy = _this.bgAdditionHeight - _this.h/2 - _this.blockDistance;
+        if(_this.blockSy >= _this.bgAdditionHeight) {
+            _this.blockDistance = 0; //数值是跑道开始到有障碍物之间的距离
+        }                               //在背景上的位置。背景为参照物
         for(var i=0;i<5;i++){
             _this.blockList[i] = new Image();
             _this.blockList[i].src = './img/roadBlock.png';
-            ctx.drawImage(_this.blockList[i],(w -_this.blockSize[0])/2, _this.bgAdditionHeight - _this.blockItemTop,_this.blockSize[0],_this.blockSize[1]);
+            ctx.drawImage(_this.blockList[i],(w -_this.blockSize[0])/2, _this.bgAdditionHeight - _this.h/2 - _this.blockItemTop,_this.blockSize[0],_this.blockSize[1]);
             _this.blockItemTop += _this.blockToBlockDistance;
         }
 
