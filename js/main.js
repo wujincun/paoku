@@ -32,6 +32,9 @@ var paoku ={
     lastTime: 0,
     flag:false,//标志是否跳起 true为跳起
     isUp:false,//是否向上跳
+    endToBlockDistance:200,//开始位置到有障碍物的距离
+    blockDistance:200,
+    blockToBlockDistance: 300,
     
     init: function() {
         var _this = this;
@@ -45,7 +48,8 @@ var paoku ={
             './img/runway_bg.jpg',
             './img/person_nm_1.png',
             './img/person_nm_2.png',
-            './img/H5页面.jpg'
+            './img/H5页面.jpg',
+            './img/roadBlock.png'
         ];
         var num = imgs.length;
         for(var i = 0;i<num;i++){
@@ -110,25 +114,27 @@ var paoku ={
         var _this = this;
         _this.bg = new Image();
         _this.bg.src = './img/new_bg.jpg';
-        _this.bg.onload= function () {
-            ctx.drawImage(_this.bg, 0, 0, _this.w, _this.h);
-        };
+        ctx.drawImage(_this.bg, 0, 0, _this.w, _this.h);
         //背景，一直跑的跑道
         _this.bgAddition = new Image();
         _this.bgAddition.src = './img/H5页面.jpg';
         _this.bgAdditionHeight = _this.w * 1450 / 640;//按给的图的大小计算height，宽度整屏宽度
 
     },
-    renderBlock:function (ctx) {//要想循环，那必须两张图了，含有障碍物的跑道为一张大图
+    renderBlock:function (ctx) {
         var _this = this;
-        var w = this.w;
-        var h = this.h;
-        _this.block = {};
-        _this.block.size = [w * 0.2, w * 0.2 * 190 / 130];//大小重新计算
-        _this.block.centerPositon = (w - _this.block.size[0]) / 2;
-        _this.block.positon = [_this.block.centerPositon, h - _this.block.size[1]];//重新计算
+        var w = _this.w;
+        var h = _this.h;
+        _this.blockSize = [w * 0.8,w * 0.8 * 95/520];
+        var blockDistance = _this.endToBlockDistance;
+
+        for(var i=0;i<10;i++){
+            _this.blockList[i] = new Image();
+            _this.blockList[i].src = './img/roadBlock.png';
+            ctx.drawImage(_this.blockList[i],(w -_this.blockSize[0])/2, _this.bgAdditionHeight - blockDistance,_this.blockSize[0],_this.blockSize[1]);
+            blockDistance += _this.blockToBlockDistance;
+        }
         _this.runner.ceiling = [_this.runner.centerPositon,h - _this.runner.size[1]-200];
-        //_this.runner.ceiling = [_this.runner.centerPositon,h - _this.runner.size[1]-_this.block.size[1]];
     },
     renderRunner:function(ctx){
         var _this = this;
@@ -175,9 +181,10 @@ var paoku ={
                 _this.bgSpeed = _this.baseSpeed * (60 * (curTime - _this.lastTime) / 1000);
             }
             _this.lastTime = curTime;*/
-            //注意顺序，先画背景，再画终点线，再画刻度，再画障碍物，最后画人物
+            //注意顺序，先画背景,再画障碍物，最后画人物
             ctx.clearRect(0, 0, _this.w, _this.h);
             _this.runBg(ctx);
+            _this.runBlock(ctx);
             _this.frameCount++;
             if(_this.flag){//跳起
                 _this.jumpRunner(ctx);//画每一帧跳起的小人
@@ -203,7 +210,7 @@ var paoku ={
         _this.bgDistance += _this.bgSpeed;
         _this.sy = _this.bgAdditionHeight - _this.h/2 - _this.bgDistance;
         if(_this.sy <= 0) {
-            _this.bgDistance = 0
+            _this.bgDistance = _this.endToBlockDistance //数值是跑道开始到有障碍物之间的距离
         }
         //drawImage(img,sx,sy,swidth,sheight,x,y,width,height)
         ctx.drawImage(_this.bgAddition, 0, _this.sy, _this.w,_this.h/2,0, 0,_this.w, _this.h);//_this.h/2是一屏？？？img画的高度
@@ -238,11 +245,19 @@ var paoku ={
         }
     },
     runBlock:function (ctx) {
-        _this.block.size = [w * 0.2, w * 0.2 * 190 / 130];//大小重新计算
-        _this.block.centerPositon = (w - _this.block.size[0]) / 2;
-        _this.block.positon = [_this.block.centerPositon, h - _this.block.size[1]];//重新计算
-    },
+        var _this = this;
+        var w = _this.w;
+        _this.blockSize = [w * 0.8,w * 0.8 * 95/520];
+        _this.blockDistance -=_this.bgSpeed;
+        _this.blockItemTop = _this.blockDistance;
+        for(var i=0;i<5;i++){
+            _this.blockList[i] = new Image();
+            _this.blockList[i].src = './img/roadBlock.png';
+            ctx.drawImage(_this.blockList[i],(w -_this.blockSize[0])/2, _this.bgAdditionHeight - _this.blockItemTop,_this.blockSize[0],_this.blockSize[1]);
+            _this.blockItemTop += _this.blockToBlockDistance;
+        }
 
+    },
     bind:function (ctx) {
         var _this = this;
         //swiperUp
@@ -253,7 +268,6 @@ var paoku ={
             moveY = initY = e.targetTouches[0].pageY;
             moveX = initX = e.targetTouches[0].pageX;
             temp = _this.runner.positon[1];
-
         });
         canvas.addEventListener('touchmove',function (e) {
             e.preventDefault();
@@ -262,7 +276,6 @@ var paoku ={
                     _this.flag = true;
                     _this.run(ctx);
                 }
-
             }
             function checkMoveUp(e){
                 moveX = e.targetTouches[0].pageX;
