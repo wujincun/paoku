@@ -12,7 +12,9 @@ var paoku = {
     runner: {},//人的动作集合
     blockList: [],//障碍物的数组集合
     bgSpeed: 6,  //和baseSpeed，给了一个初始值，可以在初始化时根据其他因素设置
-    //要求速度变化，设置 bgFastSpeed:8,bgSlowSpeed:4
+    //要求速度变化，设置
+    bgFastSpeed:8,
+    bgSlowSpeed:4,
     //可以通过speedFlag来判断是何速度，背景图片切换的时候作为判断边界
     frameCount: 0,//每一帧的计算
     isInit: false,
