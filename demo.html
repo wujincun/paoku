@@ -35,18 +35,21 @@ html>
     var progress = 0;
     var stop=null;
     function step(timestamp) {
-        window.cancelAnimationFrame(stop);
-        if(progress>=100) progress=0;
-        progress += 1;
-        ele.style.width = progress + "%";
-        ele.innerHTML=progress + "%";
-        if (progress < 100) {
-            stop=requestAnimationFrame(step);
+        function aaa() {
+            window.cancelAnimationFrame(stop);
+            if(progress>=100) progress=0;
+            progress += 1;
+            ele.style.width = progress + "%";
+            ele.innerHTML=progress + "%";
+            if (progress < 100) {
+                stop=requestAnimationFrame(step);
+            }
         }
+        aaa()
     }
     document.getElementById("run").addEventListener("click", function() {
         ele.style.width = "1px";
-        step();
+        step(100);
     }, false);
     document.getElementById("stop").addEventListener("click", function() {
         window.cancelAnimationFrame(stop);//可以取消该次动画。
