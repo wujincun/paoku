@@ -169,11 +169,6 @@ var paoku = {
             if (_this.flag) {//跳起
                 _this.jumpRunner(ctx);//画每一帧跳起的小人
                 _this.rafId = window.requestAnimationFrame(animateRun);
-               /* if(_this.collisionTest() && !_this.scoreFlag){
-                    _this.score += 10;
-                    $('#score').text(_this.score);
-                    _this.scoreFlag = true;
-                }*/
             } else {
                 _this.runRunner(ctx);//画每一帧奔跑的小人
                 _this.rafId = window.requestAnimationFrame(animateRun);
@@ -214,23 +209,25 @@ var paoku = {
                 _this.runner.positon[1] -= 20;//背景速度为6
                 ctx.drawImage(_this.runner[_this.runner.animateState], _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0], _this.runner.size[1]);
             }
-            if(_this.collisionTest() && !_this.scoreFlag){
-                _this.score += 10;
-                $('#score').text(_this.score);
-                _this.scoreFlag = true;
-            }
         } else {
             if (_this.runner.positon[1] >= _this.runner.floor[1]) {
                 _this.runner.positon[1] = _this.runner.floor[1];
                 _this.isUp = false;
                 _this.flag = false;
-                _this.scoreFlag = false;
+                if(_this.scoreFlag){
+                    _this.score += 10;
+                    $('#score').text(_this.score);
+                    _this.scoreFlag = false;
+                }
             } else {
                 _this.runner.positon[1] += 10;
                 ctx.drawImage(_this.runner[_this.runner.animateState], _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0], _this.runner.size[1]);
             }
         }
-
+        //加分
+        if(_this.collisionTest()){
+            _this.scoreFlag = true;
+        }
     },
     runBlock: function (ctx) {
         var _this = this;
