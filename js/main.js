@@ -11,12 +11,13 @@ var paoku = {
     blockToBlockDistance: 500,//障碍物跨栏之间的距离
     runner: {},//人的动作集合
     blockList: [],//障碍物的数组集合
-    bgSpeed: 6,  //和baseSpeed，给了一个初始值，可以在初始化时根据其他因素设置
+    bgSpeed: 4,  //和baseSpeed，给了一个初始值，可以在初始化时根据其他因素设置
     //要求速度变化，设置
-    bgFastSpeed:8,
-    bgSlowSpeed:4,
+    bgMidSpeed:8,
+    bgFastSpeed:12,
     //可以通过speedFlag来判断是何速度，背景图片切换的时候作为判断边界
     frameCount: 0,//每一帧的计算
+    circle:0,//背景循环次数
     isInit: false,
     rafId: '',//动画的id
     lastTime: 0,//requestAnimationFrame兼容
@@ -24,7 +25,6 @@ var paoku = {
     isUp: false,//是否向上跳
     score:0,//分数
     scoreFlag : false,
-
 
     init: function () {
         var _this = this;
@@ -165,6 +165,7 @@ var paoku = {
             window.cancelAnimationFrame(_this.rafId);//不清理会动画积累
             //注意顺序，先画背景,再画障碍物，最后画人物
             ctx.clearRect(0, 0, _this.w, _this.h);
+            _this.changeSpeed();
             _this.runBg(ctx);
             _this.runBlock(ctx);
             _this.frameCount++;
@@ -188,6 +189,7 @@ var paoku = {
         _this.bgDistance += _this.bgSpeed;
         _this.sy = _this.bgAdditionHeight - _this.h / 2 - _this.bgDistance;
         if (_this.sy <= 0) {
+            _this.circle ++;//只以背景循环为准
             _this.bgDistance = _this.endToBlockDistance; //数值是跑道开始到有障碍物之间的距离
         }
         //drawImage(img,sx,sy,swidth,sheight,x,y,width,height)
@@ -305,6 +307,13 @@ var paoku = {
     },
     gameOver:function () {
         alert('Game Over')
+    },
+    changeSpeed:function () {
+        var _this = this;
+        if(_this.circle >= 4){
+            var circleNum = Math.floor(_this.circle / 4);
+            circleNum % 2 ? _this.bgSpeed = _this.bgMidSpeed : _this.bgSpeed = _this.bgFastSpeed;
+        }
     }
 };
 
