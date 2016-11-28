@@ -1,0 +1,56 @@
+html>
+<head>
+    <meta charset="gbk">
+    <title>动画</title>
+</head>
+<body>
+<div id="test" style="width:1px;height:17px;background:#0f0;">0%</div>
+<input type="button" value="Run" id="run"/>
+<input type="button" value="停止" id="stop"/>
+</body>
+<script>
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+    }
+    if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = function (callback, element) {
+            var currTime = Date.now();
+            var timeToCall = Math.max(0, 16.7 - (currTime - lastTime));
+            var id = window.setTimeout(function () {
+                callback(currTime + timeToCall);
+            }, timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+    }
+    if (!window.cancelAnimationFrame) {
+        window.cancelAnimationFrame = function (id) {
+            clearTimeout(id);
+        };
+    }
+    var start = null;
+    var ele = document.getElementById("test");
+    var progress = 0;
+    var stop=null;
+    function step(timestamp) {
+        window.cancelAnimationFrame(stop);
+        if(progress>=100) progress=0;
+        progress += 1;
+        ele.style.width = progress + "%";
+        ele.innerHTML=progress + "%";
+        if (progress < 100) {
+            stop=requestAnimationFrame(step);
+        }
+    }
+    document.getElementById("run").addEventListener("click", function() {
+        ele.style.width = "1px";
+        step();
+    }, false);
+    document.getElementById("stop").addEventListener("click", function() {
+        window.cancelAnimationFrame(stop);//可以取消该次动画。
+    }, false);
+
+</script>
+</html>

@@ -5,36 +5,22 @@
 var paoku = {
     w: $(window).width(),
     h: $(window).height(),
-    bgDistance: 0,
-    /* bgAdditionHeight: 0, //bgAddition是跑道附加素材
-     bgAdditionDistance: 0,*/
-    runner: {},
-    frameCount: 0,
-    /*swipeLock: true,*/
-    /*totalDistance: 0,
-     runwayLength: 0,*/
+    bgDistance: 0,//背景到start的位置
+    blockDistance: 300, //障碍物到start的位置
+    endToBlockDistance: 300,//开始位置到有障碍物的距离
+    blockToBlockDistance: 500,//障碍物跨栏之间的距离
+    runner: {},//人的动作集合
+    blockList: [],//障碍物的数组集合
     bgSpeed: 6,  //和baseSpeed，给了一个初始值，可以在初始化时根据其他因素设置
     //要求速度变化，设置 bgFastSpeed:8,bgSlowSpeed:4
     //可以通过speedFlag来判断是何速度，背景图片切换的时候作为判断边界
-    blockList: [],//
-    blockGap: 50,//障碍物跨栏之间的距离
-    /* runActTimer: '',
-     startLineHeight: 0,
-     scaleHeight: 0,
-     scaleList: [],*/
+    frameCount: 0,//每一帧的计算
     isInit: false,
-    /*speedNormal: 0,
-     speedFast: 0,
-     speedSlow: 0,*/
-    /* collisionTimer: '',
-     endLine: {},*/
-    rafId: '',
-    lastTime: 0,
+    rafId: '',//动画的id
+    lastTime: 0,//requestAnimationFrame兼容
     flag: false,//标志是否跳起 true为跳起
     isUp: false,//是否向上跳
-    endToBlockDistance: 300,//开始位置到有障碍物的距离
-    blockDistance: 300,
-    blockToBlockDistance: 500,
+
 
     init: function () {
         var _this = this;
@@ -64,9 +50,6 @@ var paoku = {
             }
         }
         //设置初始值
-        /* _this.totalDistance = _this.runwayLength = _this.w * 15; //跑道长度是宽度15倍
-         _this.baseSpeed = _this.speedNormal = _this.bgSpeed = Math.round(_this.runwayLength / 1500); //25秒完成游戏，一秒60帧*/
-        //requestAnimationFrame兼容
         var vendors = ['ms', 'moz', 'webkit', 'o'];
         for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
             window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
@@ -127,13 +110,13 @@ var paoku = {
         var h = _this.h;
         _this.blockSize = [w * 0.8, w * 0.8 * 95 / 520];
         var blockDistance = _this.endToBlockDistance;
-
-        for (var i = 0; i < 10; i++) {
+        //初始化的障碍物
+       /* for (var i = 0; i < 5; i++) {
             _this.blockList[i] = new Image();
             _this.blockList[i].src = './img/roadBlock.png';
             ctx.drawImage(_this.blockList[i], (w - _this.blockSize[0]) / 2, _this.bgAdditionHeight - _this.h / 2 - blockDistance, _this.blockSize[0], _this.blockSize[1]);
             blockDistance += _this.blockToBlockDistance;
-        }
+        }*/
         _this.runner.ceiling = [_this.runner.centerPositon, h - _this.runner.size[1] - 200];
     },
     renderRunner: function (ctx) {
@@ -174,13 +157,8 @@ var paoku = {
     },
     run: function (ctx) {
         var _this = this;
-        window.cancelAnimationFrame(_this.rafId);//不清理会动画积累
         function animateRun() {
-            /* var curTime = Date.now();
-             if (_this.lastTime > 0) {
-             _this.bgSpeed = _this.baseSpeed * (60 * (curTime - _this.lastTime) / 1000);
-             }
-             _this.lastTime = curTime;*/
+            window.cancelAnimationFrame(_this.rafId);//不清理会动画积累
             //注意顺序，先画背景,再画障碍物，最后画人物
             ctx.clearRect(0, 0, _this.w, _this.h);
             _this.runBg(ctx);
@@ -196,14 +174,7 @@ var paoku = {
             }
             _this.rafId = window.requestAnimationFrame(animateRun);
         }
-
         animateRun();
-        //背景
-
-        //人
-
-        //
-
     },
     runBg: function (ctx) {
         var _this = this;
@@ -253,7 +224,7 @@ var paoku = {
         _this.blockItemTop = _this.blockDistance;//每个障碍物的位置，障碍物之间为参照物
         _this.blockSy = _this.bgAdditionHeight - _this.h / 2 - _this.blockDistance;//在背景上的位置。背景为参照物
         if (_this.blockSy >= _this.bgAdditionHeight) {
-            _this.blockDistance = 36; //数值要精确计算
+            _this.blockDistance = -70; //数值要精确计算
         }
         for (var i = 0; i < 5; i++) {
             _this.blockList[i] = new Image();
@@ -278,11 +249,9 @@ var paoku = {
         });
         canvas.addEventListener('touchmove', function (e) {
             e.preventDefault();
-            if (!_this.flag) {// 未跳起状态
-                if (checkMoveUp(e)) {
-                    _this.flag = true;
-                    _this.run(ctx);
-                }
+            if (!_this.flag && checkMoveUp(e)) {// 未跳起状态并且移动一定距离
+                _this.flag = true;
+                _this.run(ctx);
             }
             function checkMoveUp(e) {
                 moveX = e.targetTouches[0].pageX;
@@ -301,17 +270,15 @@ var paoku = {
 //碰撞检测
     collisionTest: function () {
         var _this = this;
-        for (var i = 0; i < _this.blockList.length; i++) {
-            var blockItem = _this.blockList[i],
-            //小人中心点坐标
-                runnerHoriCenterCord = [_this.runner.positon[0] + _this.runner.size[0] / 2, _this.runner.positon[1] + _this.runner.size[1] / 2],
-            //障碍物中心点坐标
-                blockHoriCenterCord = [blockItem.left + _this.blockSize[0] / 2, blockItem.top + _this.blockSize[1] / 5];//认为中心在栏杆整张图的上部分1/5
-            //判断位置，跨栏的高度只占1/3
-            //Math.abs(runnerHoriCenterCord[0] - blockHoriCenterCord[0]) < (_this.runner.size[0] + blockItem.width) / 2 && Math.abs(runnerHoriCenterCord[1] - blockHoriCenterCord[1]) < (_this.runner.size[1] + blockItem.height) / 2
-            if (Math.abs(runnerHoriCenterCord[1] - blockHoriCenterCord[1]) < (_this.runner.size[1] + blockItem.height / 5) / 2) {
-                this.handleCollision();
-            }
+        var blockItem = _this.blockList[0],
+        //小人中心点坐标
+        runnerHoriCenterCord = [_this.runner.positon[0] + _this.runner.size[0] / 2, _this.runner.positon[1] + _this.runner.size[1] / 2],
+        //障碍物中心点坐标
+        blockHoriCenterCord = [blockItem.left + _this.blockSize[0] / 2, blockItem.top + _this.blockSize[1] / 5];//认为中心在栏杆整张图的上部分1/5
+        //判断位置，跨栏的高度只占1/3
+        //Math.abs(runnerHoriCenterCord[0] - blockHoriCenterCord[0]) < (_this.runner.size[0] + blockItem.width) / 2 && Math.abs(runnerHoriCenterCord[1] - blockHoriCenterCord[1]) < (_this.runner.size[1] + blockItem.height) / 2
+        if (Math.abs(runnerHoriCenterCord[1] - blockHoriCenterCord[1]) < (_this.runner.size[1] + blockItem.height ) / 10) {
+            this.handleCollision();
         }
     },
     handleCollision: function () {
