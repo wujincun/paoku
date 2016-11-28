@@ -20,6 +20,7 @@ var paoku = {
     lastTime: 0,//requestAnimationFrame兼容
     flag: false,//标志是否跳起 true为跳起
     isUp: false,//是否向上跳
+    score:0,//分数
 
 
     init: function () {
@@ -167,11 +168,15 @@ var paoku = {
             if (_this.flag) {//跳起
                 _this.jumpRunner(ctx);//画每一帧跳起的小人
                 _this.rafId = window.requestAnimationFrame(animateRun);
+                if(_this.collisionTest()){
+                    _this.score += 10;
+                    $('#score').text(_this.score)
+                }
             } else {
                 _this.runRunner(ctx);//画每一帧奔跑的小人
                 _this.rafId = window.requestAnimationFrame(animateRun);
-                if (_this.frameCount % 5 == 0) {
-                    _this.collisionTest();
+                if (_this.frameCount % 5 == 0 && _this.collisionTest()) {
+                    _this.handleCollision();
                 }
             }
             //_this.rafId = window.requestAnimationFrame(animateRun);//不可写在此处，否则碰撞检测_this.collisionTest()清除不了动画，因为还没有
@@ -281,12 +286,17 @@ var paoku = {
         //判断位置，跨栏的高度只占1/3
         //Math.abs(runnerHoriCenterCord[0] - blockHoriCenterCord[0]) < (_this.runner.size[0] + blockItem.width) / 2 && Math.abs(runnerHoriCenterCord[1] - blockHoriCenterCord[1]) < (_this.runner.size[1] + blockItem.height) / 2
         if (Math.abs(runnerHoriCenterCord[1] - blockHoriCenterCord[1]) < (_this.runner.size[1] + blockItem.height ) / 10) {
-            _this.handleCollision();
+            return true
         }
+        return false;
     },
     handleCollision: function () {
         var _this = this;
-        window.cancelAnimationFrame(_this.rafId)
+        window.cancelAnimationFrame(_this.rafId);
+        _this.gameOver();
+    },
+    gameOver:function () {
+        alert('Game Over')
     }
 };
 
