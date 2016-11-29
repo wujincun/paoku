@@ -27,6 +27,7 @@ var paoku = {
     isUp: false,//是否向上跳
     score:0,//分数
     scoreFlag : false,
+    blockflag:true,
     init: function () {
         var _this = this;
         //加载完图片后render
@@ -239,21 +240,21 @@ var paoku = {
     runBlock: function (ctx) {
         var _this = this;
         var w = _this.w;
-        var l =
         _this.blockSize = [w * 0.8, w * 0.8 * 95 / 520];
-        _this.blockDistance -= _this.bgSpeed;
-        _this.blockItemTop = _this.blockDistance;//每个障碍物的位置，障碍物之间为参照物
-        _this.blockSy =  _this.blockDistance;//在背景上的位置。背景为参照物
+        _this.blockItemTop = (_this.blockItemTop ? _this.blockItemTop -= _this.bgSpeed : _this.blockDistance -=_this.bgSpeed); //每个障碍物的位置，障碍物之间为参照物
         for (var i = 0; i < 5; i++) {
             _this.blockList[i] = new Image();
             _this.blockList[i].src = './img/roadBlock.png';
             _this.blockList[i].left = (w - _this.blockSize[0]) / 2;
             _this.blockList[i].top =  _this.blockItemTop;
             ctx.drawImage(_this.blockList[i], _this.blockList[i].left, _this.blockList[i].top, _this.blockSize[0], _this.blockSize[1]);
-            _this.blockItemTop += _this.blockToBlockDistance;
+            /*if(_this.blockflag){
+                _this.blockItemTop += _this.blockToBlockDistance;
+            }
+            i == 4 && (_this.blockflag = false)
         }
         if(_this.blockList[4].top <= _this.h){
-            _this.blockItemTop = -_this.blockToBlockDistance;
+            _this.blockItemTop = -_this.blockToBlockDistance;*/
         }
     },
     bind: function (ctx) {
@@ -284,9 +285,6 @@ var paoku = {
                 return false;
             }
         });
-        canvas.addEventListener('touchend', function (e) {
-            //window.cancelAnimationFrame(_this.rafId)
-        })
     },
 //碰撞检测
     collisionTest: function (i) {
@@ -310,13 +308,15 @@ var paoku = {
         _this.gameOver();
     },
     gameOver:function () {
-        alert('Game Over')
+        alert('Game Over');
+        /*canvas.removeEventListener('touchstart', this.handleTouchStart, true);//解绑
+        canvas.removeEventListener('touchmove', this.handleTouchMove, true)*/
     },
     changeSpeed:function () {
         var _this = this;
         if(_this.circle >= 2){
             var circleNum = Math.floor(_this.circle / 4);
-            circleNum % 2 ? _this.bgSpeed = _this.bgMidSpeed : _this.bgSpeed = _this.bgFastSpeed;
+            (circleNum != 0 && circleNum % 2) ? _this.bgSpeed = _this.bgMidSpeed : _this.bgSpeed = _this.bgFastSpeed;
         }
     }
 };
