@@ -3,6 +3,8 @@
  */
 
 var paoku = {
+    $score : $('#score'),
+    $time : $('#time'),
     w: $(window).width(),
     h: $(window).height(),
     bgDistance: 0,//背景到start的位置
@@ -149,6 +151,7 @@ var paoku = {
             if (readyCountNum == 0) {
                 clearInterval(readyCountTimer);
                 $('#count_down').hide();
+                _this.initTime = Date.now();
                 _this.run(ctx); //跑
                 _this.bind(ctx);
             } else {
@@ -158,9 +161,13 @@ var paoku = {
     },
     run: function (ctx) {
         var _this = this;
+        var timeGap,seconds,ms;
         function animateRun() {
             window.cancelAnimationFrame(_this.rafId);//不清理会动画积累
-            //注意顺序，先画背景,再画障碍物，最后画人物
+            timeGap = Date.now() - _this.initTime;
+            seconds = Math.round(timeGap/10);
+            _this.$time.text(seconds/100 + 's');
+
             ctx.clearRect(0, 0, _this.w, _this.h);
             _this.changeSpeed();
             _this.renderBg(ctx);
@@ -180,7 +187,6 @@ var paoku = {
                 }
                 _this.runBlock(ctx);
             }
-
             //_this.rafId = window.requestAnimationFrame(animateRun);//不可写在此处，否则碰撞检测_this.collisionTest()清除不了动画，因为还没有
         }
         animateRun();
@@ -214,7 +220,7 @@ var paoku = {
                 _this.flag = false;
                 if(_this.scoreFlag){
                     _this.score += 10;
-                    $('#score').text(_this.score);
+                    _this.$score.text(_this.score);
                     _this.scoreFlag = false;
                 }
             } else {
