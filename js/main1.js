@@ -6,8 +6,8 @@ var paoku = {
     w: $(window).width(),
     h: $(window).height(),
     bgDistance: 0,//背景到start的位置
-    blockDistance: 300, //障碍物到start的位置
-    endToBlockDistance: 300,//开始位置到有障碍物的距离
+    blockDistance: 500, //障碍物到start的位置,初始值和endToBlockDistance一样
+    endToBlockDistance: 500,//开始位置到有障碍物的距离
     blockToBlockDistance: 500,//障碍物跨栏之间的距离
     runner: {},//人的动作集合
     blockList: [],//障碍物的数组集合
@@ -164,7 +164,6 @@ var paoku = {
             ctx.clearRect(0, 0, _this.w, _this.h);
             _this.changeSpeed();
             _this.renderBg(ctx);
-            _this.runBlock(ctx);
             _this.frameCount++;
             if (_this.flag) {//跳起
                 _this.jumpRunner(ctx);//画每一帧跳起的小人
@@ -179,23 +178,13 @@ var paoku = {
                         }
                     }
                 }
+                _this.runBlock(ctx);
             }
+
             //_this.rafId = window.requestAnimationFrame(animateRun);//不可写在此处，否则碰撞检测_this.collisionTest()清除不了动画，因为还没有
         }
         animateRun();
     },
-    /*runBg: function (ctx) {
-        var _this = this;
-        //含起始线的背景移动
-        _this.bgDistance += _this.bgSpeed;
-        _this.sy = _this.bgAdditionHeight - _this.h / 2 - _this.bgDistance;
-        if (_this.sy <= 0) {
-            _this.circle ++;//只以背景循环为准
-            _this.bgDistance = _this.endToBlockDistance; //数值是跑道开始到有障碍物之间的距离
-        }
-        //drawImage(img,sx,sy,swidth,sheight,x,y,width,height)
-        ctx.drawImage(_this.bgAddition, 0, _this.sy, _this.w, _this.h / 2, 0, 0, _this.w, _this.h);//_this.h/2是一屏？？？img画的高度
-    },//背景不动*/
     runHouse: function () {
 
     },//两侧房子
@@ -216,6 +205,7 @@ var paoku = {
             } else {
                 _this.runner.positon[1] -= 20;//背景速度为6
                 ctx.drawImage(_this.runner[_this.runner.animateState], _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0], _this.runner.size[1]);
+                _this.runBlock(ctx);
             }
         } else {
             if (_this.runner.positon[1] >= _this.runner.floor[1]) {
@@ -229,6 +219,7 @@ var paoku = {
                 }
             } else {
                 _this.runner.positon[1] += 10;
+                _this.runBlock(ctx);
                 ctx.drawImage(_this.runner[_this.runner.animateState], _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0], _this.runner.size[1]);
             }
         }
@@ -242,13 +233,11 @@ var paoku = {
     runBlock: function (ctx) {
         var _this = this;
         var w = _this.w;
+        var l =
         _this.blockSize = [w * 0.8, w * 0.8 * 95 / 520];
         _this.blockDistance -= _this.bgSpeed;
         _this.blockItemTop = _this.blockDistance;//每个障碍物的位置，障碍物之间为参照物
         _this.blockSy =  _this.blockDistance;//在背景上的位置。背景为参照物
-        /*if (_this.blockSy >= _this.bgAdditionHeight) {
-            _this.blockDistance = -70; //数值要精确计算
-        }*/
         for (var i = 0; i < 5; i++) {
             _this.blockList[i] = new Image();
             _this.blockList[i].src = './img/roadBlock.png';
@@ -256,6 +245,9 @@ var paoku = {
             _this.blockList[i].top =  _this.blockItemTop;
             ctx.drawImage(_this.blockList[i], _this.blockList[i].left, _this.blockList[i].top, _this.blockSize[0], _this.blockSize[1]);
             _this.blockItemTop += _this.blockToBlockDistance;
+        }
+        if(_this.blockList[4].top <= _this.h){
+            _this.blockItemTop = -_this.blockToBlockDistance;
         }
     },
     bind: function (ctx) {
