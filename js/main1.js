@@ -164,13 +164,10 @@ var paoku = {
                 _this.runRunner(ctx);//画每一帧奔跑的小人
                 _this.rafId = window.requestAnimationFrame(animateRun);
                 if (_this.frameCount % 5 == 0 ) {
-                    for(var i =0; i<_this.blockList.length; i++){
-                        if(_this.collisionTest(i)){
-                            _this.handleCollision();
-                        }
+                    if(_this.collisionTest()){
+                        _this.handleCollision();
                     }
                 }
-                _this.runBlock(ctx);
             }
             //_this.rafId = window.requestAnimationFrame(animateRun);//不可写在此处，否则碰撞检测_this.collisionTest()清除不了动画，因为还没有
         }
@@ -181,7 +178,13 @@ var paoku = {
     },//两侧房子
     runRunner: function (ctx) {
         var _this = this;
-        ctx.drawImage(_this.runner.img, _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0], _this.runner.size[1]);
+        if(_this.runner.positon[1] - _this.blockList[0].top > 0 && _this.runner.positon[1] - _this.blockList[0].top < (_this.runner.size[1] + _this.blockSize[1] ) / 2){
+            _this.runBlock(ctx);
+            ctx.drawImage(_this.runner.img, _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0], _this.runner.size[1]);
+        }else{
+            ctx.drawImage(_this.runner.img, _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0], _this.runner.size[1]);
+            _this.runBlock(ctx);
+        }
     },
     jumpRunner: function (ctx) {
         var _this = this;
@@ -212,10 +215,8 @@ var paoku = {
             ctx.drawImage(_this.runner.img, _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0], _this.runner.size[1]);
         }
         //加分
-        for(var i =0; i<_this.blockList.length; i++){
-            if(_this.collisionTest(i)){
-                _this.scoreFlag = true;
-            }
+        if(_this.collisionTest()){
+            _this.scoreFlag = true;
         }
     },
     runBlock: function (ctx) {
@@ -265,16 +266,16 @@ var paoku = {
         });
     },
 //碰撞检测
-    collisionTest: function (i) {
+    collisionTest: function () {
         var _this = this;
-        var blockItem = _this.blockList[i];
+        var blockItem = _this.blockList[0];
         //小人中心点坐标
         runnerHoriCenterCord = [_this.runner.positon[0] + _this.runner.size[0] / 2, _this.runner.positon[1] + _this.runner.size[1] / 2],
         //障碍物中心点坐标
         blockHoriCenterCord = [blockItem.left + _this.blockSize[0] / 2, blockItem.top + _this.blockSize[1] / 2];//认为中心在栏杆整张图的上部分1/5
         //判断位置，跨栏的高度只占1/3
         //Math.abs(runnerHoriCenterCord[0] - blockHoriCenterCord[0]) < (_this.runner.size[0] + blockItem.width) / 2 && Math.abs(runnerHoriCenterCord[1] - blockHoriCenterCord[1]) < (_this.runner.size[1] + blockItem.height) / 2
-        if (Math.abs(runnerHoriCenterCord[1] - blockHoriCenterCord[1]) < (_this.runner.size[1] + _this.blockSize[1] ) / 10) {
+        if (Math.abs(runnerHoriCenterCord[1] - blockHoriCenterCord[1]) < (_this.runner.size[1] + _this.blockSize[1] ) / 5) {
             return true
         }
         return false;
