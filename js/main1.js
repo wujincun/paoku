@@ -192,9 +192,9 @@ var paoku = {
                 _this.isUp = true
             } else {
                 _this.runner.positon[1] -= 20;//背景速度为6
-                ctx.drawImage(_this.runner.img, _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0], _this.runner.size[1]);
-                _this.runBlock(ctx);
             }
+            ctx.drawImage(_this.runner.img, _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0], _this.runner.size[1]);
+            _this.runBlock(ctx);
         } else {
             if (_this.runner.positon[1] >= _this.runner.floor[1]) {
                 _this.runner.positon[1] = _this.runner.floor[1];
@@ -207,9 +207,9 @@ var paoku = {
                 }
             } else {
                 _this.runner.positon[1] += 10;
-                _this.runBlock(ctx);
-                ctx.drawImage(_this.runner.img, _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0], _this.runner.size[1]);
             }
+            _this.runBlock(ctx);
+            ctx.drawImage(_this.runner.img, _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0], _this.runner.size[1]);
         }
         //加分
         for(var i =0; i<_this.blockList.length; i++){
