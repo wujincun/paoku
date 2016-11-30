@@ -150,6 +150,7 @@ var paoku = {
         var timeGap,seconds,ms;
         function animateRun() {
             window.cancelAnimationFrame(_this.rafId);//不清理会动画积累
+            //计时
             timeGap = Date.now() - _this.initTime;
             seconds = Math.round(timeGap/10);
             _this.$time.text(seconds/100 + 's');
@@ -157,6 +158,7 @@ var paoku = {
             ctx.clearRect(0, 0, _this.w, _this.h);
             _this.changeSpeed();
             _this.frameCount++;
+
             if (_this.flag) {//跳起
                 _this.jumpRunner(ctx);//画每一帧跳起的小人
                 _this.rafId = window.requestAnimationFrame(animateRun);
@@ -180,10 +182,10 @@ var paoku = {
         var _this = this;
         var blockItem = _this.blockList[0];
         //小人中心点坐标
-        var runnerHoriCenterCord = [_this.runner.positon[0] + _this.runner.size[0] / 2, _this.runner.positon[1] + _this.runner.size[1] / 2];
+        _this.runnerHoriCenterCord = [_this.runner.positon[0] + _this.runner.size[0] / 2, _this.runner.positon[1] + _this.runner.size[1] / 2];
         //障碍物中心点坐标
-        var blockHoriCenterCord = [blockItem.left + _this.blockSize[0] / 2, blockItem.top + _this.blockSize[1] / 2];
-        if( runnerHoriCenterCord[1] - blockHoriCenterCord[1] > 0 && runnerHoriCenterCord[1] - blockHoriCenterCord[1] < (_this.runner.size[1] + _this.blockSize[1])/2 ){
+        _this.blockHoriCenterCord = [blockItem.left + _this.blockSize[0] / 2, blockItem.top + _this.blockSize[1] / 2];
+        if( _this.runnerHoriCenterCord[1] - _this.blockHoriCenterCord[1] > 0 && _this.runnerHoriCenterCord[1] - _this.blockHoriCenterCord[1] < (_this.runner.size[1] + _this.blockSize[1])/2 ){
             _this.runBlock(ctx);
             ctx.drawImage(_this.runner.img, _this.runner.positon[0], _this.runner.positon[1], _this.runner.size[0], _this.runner.size[1]);
         }else{
@@ -277,14 +279,8 @@ var paoku = {
 //碰撞检测
     collisionTest: function () {
         var _this = this;
-        var blockItem = _this.blockList[0];
-        //小人中心点坐标
-        var runnerHoriCenterCord = [_this.runner.positon[0] + _this.runner.size[0] / 2, _this.runner.positon[1] + _this.runner.size[1] / 2];
-        //障碍物中心点坐标
-        var blockHoriCenterCord = [blockItem.left + _this.blockSize[0] / 2, blockItem.top + _this.blockSize[1] / 2];//认为中心在栏杆整张图的上部分1/5
-        //判断位置，跨栏的高度只占1/3
         //Math.abs(runnerHoriCenterCord[0] - blockHoriCenterCord[0]) < (_this.runner.size[0] + blockItem.width) / 2 && Math.abs(runnerHoriCenterCord[1] - blockHoriCenterCord[1]) < (_this.runner.size[1] + blockItem.height) / 2
-        if (Math.abs(runnerHoriCenterCord[1] - blockHoriCenterCord[1]) < (_this.runner.size[1] + _this.blockSize[1] ) / 10) {
+        if (Math.abs(_this.runnerHoriCenterCord[1] - _this.blockHoriCenterCord[1]) < (_this.runner.size[1] + _this.blockSize[1] ) / 10) {
             return true
         }
         return false;
