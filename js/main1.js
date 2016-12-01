@@ -112,29 +112,40 @@ var paoku = {
         var _this = this;
         var w = _this.w;
         var h = _this.h;
-        for (var j = 0; j < 3; j++) {
+        for (var j = 0; j < 6; j++) {
             _this.houseList[j] = {};
             _this.houseList[j].img = new Image();
+            _this.houseList[j].sourceCutX = 0;
         }
         _this.houseList[0].img.src = './img/star_small.png';
         _this.houseList[1].img.src = './img/star_small.png';
         _this.houseList[2].img.src = './img/star_small.png';
+        _this.houseList[3].img.src = './img/star_small.png';
+        _this.houseList[4].img.src = './img/star_small.png';
+        _this.houseList[5].img.src = './img/star_small.png';
 
         _this.houseList[0].size = [w * 0.07, w * 0.07];
         _this.houseList[1].size = [w * 0.07, w * 0.07];
         _this.houseList[2].size = [w * 0.07, w * 0.07];
+        _this.houseList[3].size = [w * 0.07, w * 0.07];
+        _this.houseList[4].size = [w * 0.07, w * 0.07];
+        _this.houseList[5].size = [w * 0.07, w * 0.07];
 
         _this.houseList[0].renderSize = [_this.houseList[0].size[0] * 3, _this.houseList[0].size[1] * 3];
         _this.houseList[1].renderSize = [_this.houseList[1].size[0] * 2.5, _this.houseList[1].size[1] * 2.5];
         _this.houseList[2].renderSize = [_this.houseList[2].size[0] * 2, _this.houseList[2].size[1] * 2];
+        _this.houseList[3].renderSize = [_this.houseList[2].size[0] * 3, _this.houseList[2].size[1] * 3];
+        _this.houseList[4].renderSize = [_this.houseList[2].size[0] * 2.5, _this.houseList[2].size[1] * 2.5];
+        _this.houseList[5].renderSize = [_this.houseList[2].size[0] * 2, _this.houseList[2].size[1] * 2];
 
         _this.houseList[0].position = [0, h - 50];//位置水平竖直都变，
         _this.houseList[1].position = [50, 700];//位置水平竖直都变，
         _this.houseList[2].position = [130, 200];//位置水平竖直都变，
+        _this.houseList[3].position = [w - _this.houseList[3].size[0] * 0.5, h - 50];//位置水平竖直都变，
+        _this.houseList[4].position = [w - 50, 700];//位置水平竖直都变，
+        _this.houseList[5].position = [w - 130, 200];//位置水平竖直都变，
 
         _this.houseList[0].sourceCutX = _this.houseList[1].size[0] * 0.5;//有从半个到一个的渐变
-        _this.houseList[1].sourceCutX = 0;//有从半个到一个的渐变
-        _this.houseList[2].sourceCutX = 0;//有从半个到一个的渐变*/
 
         for (var i = 0; i < _this.houseList.length; i++) {
             ctx.drawImage(_this.houseList[i].img, _this.houseList[i].sourceCutX, 0, _this.houseList[i].size[0], _this.houseList[i].size[1], _this.houseList[i].position[0], _this.houseList[i].position[1], _this.houseList[i].renderSize[0], _this.houseList[i].renderSize[1])
@@ -168,8 +179,8 @@ var paoku = {
          _this.houseLeft2.sourceCutX = 0;//有从半个到一个的渐变
          _this.houseLeft3.sourceCutX = 0;//有从半个到一个的渐变
 
-        //drawImage(img,sx,sy,swidth,sheight,x,y,width,height)
-        ctx.drawImage(_this.houseLeft1.img, _this.houseLeft1.sourceCutX, 0, _this.houseLeft1.size[0], _this.houseLeft1.size[1], _this.houseLeft1.position[0], _this.houseLeft1.position[1], _this.houseLeft1.renderSize[0], _this.houseLeft1.renderSize[1])
+         //drawImage(img,sx,sy,swidth,sheight,x,y,width,height)
+         ctx.drawImage(_this.houseLeft1.img, _this.houseLeft1.sourceCutX, 0, _this.houseLeft1.size[0], _this.houseLeft1.size[1], _this.houseLeft1.position[0], _this.houseLeft1.position[1], _this.houseLeft1.renderSize[0], _this.houseLeft1.renderSize[1])
          ctx.drawImage(_this.houseLeft2.img, 0, 0, _this.houseLeft2.size[0], _this.houseLeft2.size[1], _this.houseLeft2.position[0], _this.houseLeft2.position[1], _this.houseLeft2.renderSize[0], _this.houseLeft2.renderSize[1]);
          ctx.drawImage(_this.houseLeft3.img, 0, 0, _this.houseLeft3.size[0], _this.houseLeft3.size[1], _this.houseLeft3.position[0], _this.houseLeft3.position[1], _this.houseLeft3.renderSize[0], _this.houseLeft3.renderSize[1])
          */
@@ -257,96 +268,91 @@ var paoku = {
     },
     runHouse: function (ctx) {
         var _this = this;
-        for(var i=0;i<_this.houseList.length;i++){
+        for (var i = 0; i < _this.houseList.length; i++) {
             _this.houseList[i].position[1] -= _this.bgSpeed;//位置竖直变，
             _this.houseList[i].renderSize[0] -= 0.2;
             _this.houseList[i].renderSize[1] -= 0.2;
             //左边
-            if (_this.houseList[i].sourceCutX <= 0) {
-                _this.houseList[i].sourceCutX = 0;
-                _this.houseList[i].position[0] += 0.4;//位置水平变，是else数值sourceCutX + position[0]；
-            } else {
-                _this.houseList[i].sourceCutX -= 0.2;//有从半个到一个的渐变 和水平位置加减的数值相同
-                _this.houseList[i].position[0] += 0.2;//位置水平变，
+            if(i<3){
+                if (_this.houseList[i].sourceCutX <= 0) {
+                    _this.houseList[i].sourceCutX = 0;
+                    _this.houseList[i].position[0] += 0.4;//位置水平变，是else数值sourceCutX + position[0]；
+                } else {
+                    _this.houseList[i].sourceCutX -= 0.2;//有从半个到一个的渐变 和水平位置加减的数值相同
+                    _this.houseList[i].position[0] += 0.2;//位置水平变，
+                }
+            }else{//????
+                if(_this.houseList[i].position[0] <= _this.w- _this.houseList[i].size[0]){
+                    _this.houseList[i].position[0] -= 0.2;//位置水平变，
+                }else{
+                    _this.houseList[i].position[0] -= 0.4;
+                }
             }
             //右边
-
-            if (_this.houseList[i].size[0] >= 30) {//????
-                _this.houseList[i].size[0] = 30;
-                _this.houseList[i].position[0] += 0.4;//位置水平变，是else数值sourceCutX + position[0]；
-            } else {
-                _this.houseList[i].size[0] -= 0.2;//有从半个到一个的渐变 和水平位置加减的数值相同
-                _this.houseList[i].position[0] += 0.2;//位置水平变，
-            }
-
             if (_this.houseList[i].position[1] < 80) {
                 //这里的判断
-                _this.houseList[i].renderSize = [_this.houseList[i].size[0] * 3,_this.houseList[i].size[1] * 3];
+                _this.houseList[i].renderSize = [_this.houseList[i].size[0] * 3, _this.houseList[i].size[1] * 3];
                 _this.houseList[i].position = [-100, _this.h + 380];//位置水平竖直都变，
-                if(i<3){
-                    _this.houseList[i].sourceCutX = _this.houseList[i].size[0] * 0.1;//有从半个到一个的渐变
-                }else{
-                    //????
-                    _this.houseList[i].size[0] = _this.houseList[i].size[0] * 0.1
-                }
+                _this.houseList[i].sourceCutX = _this.houseList[i].size[0] * 0.1;//有从半个到一个的渐变
+
             } else {
                 ctx.drawImage(_this.houseList[i].img, _this.houseList[i].sourceCutX, 0, _this.houseList[i].size[0], _this.houseList[i].size[1], _this.houseList[i].position[0], _this.houseList[i].position[1], _this.houseList[i].renderSize[0], _this.houseList[i].renderSize[1])
             }
         }
-       /* //左下
-        _this.houseLeft1.position[1] -= _this.bgSpeed;//位置竖直变，
-        _this.houseLeft1.renderSize[0] -= 0.2;
-        _this.houseLeft1.renderSize[1] -= 0.2;
-        if (_this.houseLeft1.sourceCutX <= 0) {
-            _this.houseLeft1.sourceCutX = 0;
-            _this.houseLeft1.position[0] += 0.4;//位置水平变，是else数值sourceCutX + position[0]；
-        } else {
-            _this.houseLeft1.sourceCutX -= 0.2;//有从半个到一个的渐变 和水平位置加减的数值相同
-            _this.houseLeft1.position[0] += 0.2;//位置水平变，
-        }
-        if (_this.houseLeft1.position[1] < 80) {
-            _this.houseLeft1.renderSize = [_this.houseLeft1.size[0] * 3, _this.houseLeft1.size[1] * 3];
-            _this.houseLeft1.position = [0, _this.h - 50];//位置水平竖直都变，
-            _this.houseLeft1.sourceCutX = _this.houseLeft1.size[0] * 0.5;//有从半个到一个的渐变
-        } else {
-            ctx.drawImage(_this.houseLeft1.img, _this.houseLeft1.sourceCutX, 0, _this.houseLeft1.size[0], _this.houseLeft1.size[1], _this.houseLeft1.position[0], _this.houseLeft1.position[1], _this.houseLeft1.renderSize[0], _this.houseLeft1.renderSize[1])
-        }
-        //左中
-        _this.houseLeft2.position[1] -= _this.bgSpeed;//位置竖直变，
-        _this.houseLeft2.renderSize[0] -= 0.2;
-        _this.houseLeft2.renderSize[1] -= 0.2;
-        _this.houseLeft2.position[0] += 0.4;//位置水平变，是else数值sourceCutX + position[0]；
-        if (_this.houseLeft2.sourceCutX <= 0) {
-            _this.houseLeft2.sourceCutX = 0;
-            _this.houseLeft2.position[0] += 0.4;//位置水平变，是else数值sourceCutX + position[0]；
-        } else {
-            _this.houseLeft2.sourceCutX -= 0.2;//有从半个到一个的渐变 和水平位置加减的数值相同
-            _this.houseLeft2.position[0] += 0.2;//位置水平变，
-        }
-        if (_this.houseLeft2.position[1] < 80) {
-            _this.houseLeft2.renderSize = [_this.houseLeft2.size[0] * 3, _this.houseLeft2.size[1] * 3];
-            _this.houseLeft2.position = [0, _this.h - 50];//位置水平竖直都变，
-            _this.houseLeft2.sourceCutX = _this.houseLeft2.size[0] * 0.5;//有从半个到一个的渐变
-        } else {
-            ctx.drawImage(_this.houseLeft2.img, 0, 0, _this.houseLeft2.size[0], _this.houseLeft2.size[1], _this.houseLeft2.position[0], _this.houseLeft2.position[1], _this.houseLeft2.renderSize[0], _this.houseLeft2.renderSize[1])
-        }
-        //左上
-        _this.houseLeft3.position[1] -= _this.bgSpeed;//位置竖直变，
-        _this.houseLeft3.renderSize[0] -= 0.2;
-        _this.houseLeft3.renderSize[1] -= 0.2;
-        _this.houseLeft3.position[0] += 0.4;//位置水平变，是else数值sourceCutX + position[0]；
-        if (_this.houseLeft3.sourceCutX <= 0) {
-            _this.houseLeft3.sourceCutX = 0;
-            _this.houseLeft3.position[0] += 0.4;//位置水平变，是else数值sourceCutX + position[0]；
-        } else {
-            _this.houseLeft3.sourceCutX -= 0.2;//有从半个到一个的渐变 和水平位置加减的数值相同
-            _this.houseLeft3.position[0] += 0.2;//位置水平变，
-        }
-        if (_this.houseLeft3.position[1] < 80) {
+        /* //左下
+         _this.houseLeft1.position[1] -= _this.bgSpeed;//位置竖直变，
+         _this.houseLeft1.renderSize[0] -= 0.2;
+         _this.houseLeft1.renderSize[1] -= 0.2;
+         if (_this.houseLeft1.sourceCutX <= 0) {
+         _this.houseLeft1.sourceCutX = 0;
+         _this.houseLeft1.position[0] += 0.4;//位置水平变，是else数值sourceCutX + position[0]；
+         } else {
+         _this.houseLeft1.sourceCutX -= 0.2;//有从半个到一个的渐变 和水平位置加减的数值相同
+         _this.houseLeft1.position[0] += 0.2;//位置水平变，
+         }
+         if (_this.houseLeft1.position[1] < 80) {
+         _this.houseLeft1.renderSize = [_this.houseLeft1.size[0] * 3, _this.houseLeft1.size[1] * 3];
+         _this.houseLeft1.position = [0, _this.h - 50];//位置水平竖直都变，
+         _this.houseLeft1.sourceCutX = _this.houseLeft1.size[0] * 0.5;//有从半个到一个的渐变
+         } else {
+         ctx.drawImage(_this.houseLeft1.img, _this.houseLeft1.sourceCutX, 0, _this.houseLeft1.size[0], _this.houseLeft1.size[1], _this.houseLeft1.position[0], _this.houseLeft1.position[1], _this.houseLeft1.renderSize[0], _this.houseLeft1.renderSize[1])
+         }
+         //左中
+         _this.houseLeft2.position[1] -= _this.bgSpeed;//位置竖直变，
+         _this.houseLeft2.renderSize[0] -= 0.2;
+         _this.houseLeft2.renderSize[1] -= 0.2;
+         _this.houseLeft2.position[0] += 0.4;//位置水平变，是else数值sourceCutX + position[0]；
+         if (_this.houseLeft2.sourceCutX <= 0) {
+         _this.houseLeft2.sourceCutX = 0;
+         _this.houseLeft2.position[0] += 0.4;//位置水平变，是else数值sourceCutX + position[0]；
+         } else {
+         _this.houseLeft2.sourceCutX -= 0.2;//有从半个到一个的渐变 和水平位置加减的数值相同
+         _this.houseLeft2.position[0] += 0.2;//位置水平变，
+         }
+         if (_this.houseLeft2.position[1] < 80) {
+         _this.houseLeft2.renderSize = [_this.houseLeft2.size[0] * 3, _this.houseLeft2.size[1] * 3];
+         _this.houseLeft2.position = [0, _this.h - 50];//位置水平竖直都变，
+         _this.houseLeft2.sourceCutX = _this.houseLeft2.size[0] * 0.5;//有从半个到一个的渐变
+         } else {
+         ctx.drawImage(_this.houseLeft2.img, 0, 0, _this.houseLeft2.size[0], _this.houseLeft2.size[1], _this.houseLeft2.position[0], _this.houseLeft2.position[1], _this.houseLeft2.renderSize[0], _this.houseLeft2.renderSize[1])
+         }
+         //左上
+         _this.houseLeft3.position[1] -= _this.bgSpeed;//位置竖直变，
+         _this.houseLeft3.renderSize[0] -= 0.2;
+         _this.houseLeft3.renderSize[1] -= 0.2;
+         _this.houseLeft3.position[0] += 0.4;//位置水平变，是else数值sourceCutX + position[0]；
+         if (_this.houseLeft3.sourceCutX <= 0) {
+         _this.houseLeft3.sourceCutX = 0;
+         _this.houseLeft3.position[0] += 0.4;//位置水平变，是else数值sourceCutX + position[0]；
+         } else {
+         _this.houseLeft3.sourceCutX -= 0.2;//有从半个到一个的渐变 和水平位置加减的数值相同
+         _this.houseLeft3.position[0] += 0.2;//位置水平变，
+         }
+         if (_this.houseLeft3.position[1] < 80) {
 
-        } else {
-            ctx.drawImage(_this.houseLeft3.img, 0, 0, _this.houseLeft3.size[0], _this.houseLeft3.size[1], _this.houseLeft3.position[0], _this.houseLeft3.position[1], _this.houseLeft3.renderSize[0], _this.houseLeft3.renderSize[1])
-        }*/
+         } else {
+         ctx.drawImage(_this.houseLeft3.img, 0, 0, _this.houseLeft3.size[0], _this.houseLeft3.size[1], _this.houseLeft3.position[0], _this.houseLeft3.position[1], _this.houseLeft3.renderSize[0], _this.houseLeft3.renderSize[1])
+         }*/
     },//两侧房子
     runRunner: function (ctx) {
         var _this = this;
