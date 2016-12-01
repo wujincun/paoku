@@ -64,8 +64,6 @@ a {
 #view_game {
   position: relative;
   font-size: 0;
-  background: url("../img/new_bg.jpg") left center no-repeat;
-  background-size: cover;
 }
 #view_game #score-head {
   position: absolute;
